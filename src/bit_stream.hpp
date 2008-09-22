@@ -18,6 +18,9 @@ struct bit_stream
 
 	bit_stream& operator=(const bit_stream& other);
 
+	void write_bool(bool n);
+	bool read_bool();
+
 	void write_uint(uint32 n, unsigned int bits=32);
 	uint32 read_uint(unsigned int bits);
     
@@ -38,6 +41,10 @@ struct bit_stream
 	void seek(unsigned int bit);
 
 private:
+	void write_bit(bool bit);
+	bool read_bit();
+	void inc_bit(); // increments cur_rel_bit and cur_byte if needed
+
 	void affirm_size(std::size_t bits);
 	void resize(std::size_t new_size);
 	void clear();

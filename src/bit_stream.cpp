@@ -76,6 +76,11 @@ void bit_stream::resize(std::size_t new_size)
 	size_ = new_size;
 }
 
+void bit_stream::write_bool(bool n)
+{
+	write_bit(n);
+}
+
 void bit_stream::write_uint(uint32 n, unsigned int bits)
 {
     // TODO: throw if bits > 32
@@ -107,6 +112,11 @@ void bit_stream::write_uint(uint32 n, unsigned int bits)
         i += bits_to_write;
         cur_rel_bit = (cur_rel_bit + bits_to_write) % 8;
     }
+}
+
+bool bit_stream::read_bool()
+{
+	return read_bit();
 }
 
 void bit_stream::write_sint(sint32 n, unsigned int bits)
@@ -196,5 +206,29 @@ void bit_stream::clear()
 {
 	if (buffer != 0)
 		delete[] buffer;
+}
+
+void bit_stream::write_bit(bool bit)
+{
+	affirm_size(1);
+	buffer[cur_byte] |= (bit << (8 - cur_rel_bit - 1));
+	inc_bit();
+}
+
+bool bit_stream::read_bit()
+{
+	bool ret = (buffer[cur_byte] >> (8 - cur_rel_bit - 1)) & 0x01;
+	inc_bit();	
+	return ret;
+}
+
+void bit_stream::inc_bit()
+{
+	cur_rel_bit += 1;
+	if (cur_rel_bit == 8)
+	{
+		cur_byte += 1;
+		cur_rel_bit = 0;
+	}
 }
 
