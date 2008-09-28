@@ -1,5 +1,10 @@
 #include "socket_common.hpp"
+
+#ifdef BLAHNET_WIN32
+#include <winsock.h>
+#else
 #include <unistd.h>
+#endif // BLAHNET_WIN32
 
 socket_common::socket_common()
 : data(new socket_data())
@@ -32,7 +37,7 @@ socket_common& socket_common::operator=(socket_common const& other)
 
 }
 
-#if BLAHNET_WIN32==1
+#ifdef BLAHNET_WIN32
 
 int socket_common::socket_data::wsock_total_count = 0;
 
@@ -46,31 +51,31 @@ void quit_wsock()
 {
 	WSACleanup();
 }
-#endif
+#endif //BLAHNET_WIN32
 
 socket_common::socket_data::socket_data()
 : count(1)
 , needs_closing(false)
 {
-#if BLAHNET_WIN32==1
+#ifdef BLAHNET_WIN32
 	if (wsock_total_count == 0)
 	{
 		init_wsock();
 	}
 	wsock_total_count += 1;
-#endif
+#endif // BLAHNET_WIN32
 }
 
 socket_common::socket_data::~socket_data()
 {
 	close();
-#if BLAHNET_WIN32==1
+#ifdef BLAHNET_WIN32
 	wsock_total_count -= 1;
 	if (wsock_total_count == 0)
 	{
 		quit_wsock();
 	}
-#endif
+#endif // BLAHNET_WIN32
 }
 
 void socket_common::socket_data::set_needs_closing()
@@ -82,11 +87,11 @@ void socket_common::socket_data::close()
 {
 	if (needs_closing)
 	{
-#if BLAHNET_WIN32==1
+#ifdef BLAHNET_WIN32
 		closesocket((SOCKET)wsock);
 #else
 		::close(psock);
-#endif
+#endif // BLAHNET_WIN32
 		needs_closing = false;
 	}
 }

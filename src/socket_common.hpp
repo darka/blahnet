@@ -25,9 +25,9 @@ protected:
 		int count;
 	private:
 		bool needs_closing;
-#if BLAHNET_WIN32==1
+#ifdef BLAHNET_WIN32
 		static int wsock_total_count;
-#endif
+#endif // BLAHNET_WIN32
 	};
 	socket_data* data;
 };

@@ -10,8 +10,8 @@ struct udp_socket : public socket_common
 	udp_socket();
 	int create();
 	int bind(unsigned short int port);
-	int sendto(void const* msg, std::size_t len, address const& addr);
-	int recvfrom(void* msg, std::size_t len, address& addr);
+	int sendto(char const* msg, std::size_t len, address const& addr);
+	int recvfrom(char* msg, std::size_t len, address& addr);
 	void close();
 };
 

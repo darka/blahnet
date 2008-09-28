@@ -1,6 +1,12 @@
 #include "address.hpp"
+
+#ifdef BLAHNET_WIN32
+#include <winsock2.h>
+#else
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#endif // BLAHNET_WIN32
+
 #include <cstring>
 
 void zero_pad(sockaddr_in& data)
@@ -27,7 +33,7 @@ address::address(unsigned short int port, char const* ip)
 {
 	data_->sin_family = AF_INET;
 	data_->sin_port = htons(port);
-	inet_aton(ip, &(data_->sin_addr));
+	data_->sin_addr.s_addr = inet_addr(ip);
 	zero_pad(*data_);
 }
 
