@@ -1,8 +1,7 @@
+#include "socket_common_func.hpp" // includes winsock.h
 #include "socket_common.hpp"
 
-#ifdef BLAHNET_WIN32
-#include <winsock.h>
-#else
+#ifndef BLAHNET_WIN32
 #include <unistd.h>
 #endif // BLAHNET_WIN32
 
@@ -41,16 +40,6 @@ socket_common& socket_common::operator=(socket_common const& other)
 
 int socket_common::socket_data::wsock_total_count = 0;
 
-void init_wsock()
-{
-	WSADATA wsa_data;
-	WSAStartup(MAKEWORD(2, 2), &wsa_data);
-}
-
-void quit_wsock()
-{
-	WSACleanup();
-}
 #endif //BLAHNET_WIN32
 
 socket_common::socket_data::socket_data()
