@@ -7,8 +7,6 @@ struct socket_common;
 
 #include <winsock.h>
 
-void init_wsock();
-void quit_wsock();
 SOCKET get_descriptor(socket_common const& socket);
 
 #else

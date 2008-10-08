@@ -3,17 +3,6 @@
 
 #ifdef BLAHNET_WIN32
 
-void init_wsock()
-{
-	WSADATA wsa_data;
-	WSAStartup(MAKEWORD(2, 2), &wsa_data);
-}
-
-void quit_wsock()
-{
-	WSACleanup();
-}
-
 SOCKET get_descriptor(socket_common const& socket)
 {
 	return (SOCKET)socket.data->wsock;

@@ -38,6 +38,17 @@ socket_common& socket_common::operator=(socket_common const& other)
 
 #ifdef BLAHNET_WIN32
 
+void init_wsock()
+{
+	WSADATA wsa_data;
+	WSAStartup(MAKEWORD(2, 2), &wsa_data);
+}
+
+void quit_wsock()
+{
+	WSACleanup();
+}
+
 int socket_common::socket_data::wsock_total_count = 0;
 
 #endif //BLAHNET_WIN32
