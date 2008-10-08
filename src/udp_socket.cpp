@@ -18,16 +18,14 @@ udp_socket::udp_socket()
 
 int udp_socket::create()
 {
-	// TODO: fix this ugliness
+	int result;
 #ifdef BLAHNET_WIN32
-	data->wsock = ::socket(PF_INET, SOCK_DGRAM, 0);
-	if (data->wsock == -1)
-		return -1;
+	result = data->wsock = ::socket(PF_INET, SOCK_DGRAM, 0);
 #else
-	data->psock = ::socket(PF_INET, SOCK_DGRAM, 0);
-	if (data->psock == -1)
-		return -1;
+	result = data->psock = ::socket(PF_INET, SOCK_DGRAM, 0);
 #endif // BLAHNET_WIN32
+	if (result == -1)
+		return -1;
 	data->set_needs_closing();
 	return 0;
 }

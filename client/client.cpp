@@ -1,9 +1,9 @@
-#include "udp_socket.hpp"
+#include "reliable_layer.hpp"
 int main()
 {
-	udp_socket sock;
-	sock.create();
+	reliable_layer rel_link;
 	address addr(23232, "127.0.0.1");
 	char msg[] = "lol wat";
-	sock.sendto(msg, strlen(msg), addr);
+	rel_link.sendto(msg, strlen(msg), addr);
+	rel_link.work();
 }
