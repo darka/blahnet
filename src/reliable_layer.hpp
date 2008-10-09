@@ -9,7 +9,7 @@
 
 struct reliable_layer
 {
-	explicit reliable_layer();
+	reliable_layer();
 	~reliable_layer();
 	void sendto(char const* msg, std::size_t msg_len,
 	            address const& addr);
@@ -17,19 +17,7 @@ struct reliable_layer
 
 private:
 	
-	struct packet
-	{
-		packet(char const* msg, std::size_t msg_len, 
-		       address const& addr)
-		: msg(msg)
-		, msg_len(msg_len)
-		, addr(addr)
-		{
-		}
-		char const* msg;
-		std::size_t msg_len;
-		address const& addr;
-	};
+	void pop_top_packet(); // handles memory
 
 	udp_socket sock;
 	uint8 seq_num; // sequence number used in sent message header

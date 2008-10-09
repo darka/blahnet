@@ -1,0 +1,17 @@
+#ifndef UUID_D9717A39A7864EDC96BAA9C5A9A7E38C
+#define UUID_D9717A39A7864EDC96BAA9C5A9A7E38C
+
+
+struct client
+{
+	client();
+
+	~client();
+
+private:
+	
+
+};
+
+#endif // UUID_D9717A39A7864EDC96BAA9C5A9A7E38C
+
