@@ -12,8 +12,6 @@ struct bit_stream
 {
 	typedef uint8 buffer_type;
 
-	// TODO: TEST copy constructor and operator=, they're 
-	//       completely untested
 	bit_stream(std::size_t size=4);
 	bit_stream(bit_stream const& other);
 	bit_stream(buffer_type* data, std::size_t size);
@@ -25,10 +23,10 @@ struct bit_stream
 	bool read_bool();
 
 	void write_uint(uint32 n, unsigned int bits=32);
-	uint32 read_uint(unsigned int bits);
+	uint32 read_uint(unsigned int bits=32);
     
 	void write_sint(sint32 n, unsigned int bits=32);
-	sint32 read_sint(unsigned int bits);
+	sint32 read_sint(unsigned int bits=32);
     
 	void write_string(std::string const& str);
 	std::string read_string();

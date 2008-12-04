@@ -204,7 +204,7 @@ void bit_stream::append(bit_stream const& bs)
 	affirm_size(bs.cur_byte * 8 + bs.cur_rel_bit);
 	if (cur_rel_bit == 0)
 	{
-		memcpy(buffer + cur_byte, bs.buffer, bs.size());
+		memcpy(buffer + cur_byte, bs.buffer, bs.cur_byte + (bs.cur_rel_bit > 0));
 		cur_byte += bs.cur_byte;
 		cur_rel_bit = bs.cur_rel_bit;
 	}

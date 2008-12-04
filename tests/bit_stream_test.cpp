@@ -141,4 +141,52 @@ namespace tut
 			ensure_equals("uint", bs.read_uint(i->second), i->first);
 		}
 	}
+
+	template<> template<>
+	void tg::object::test<4>()
+	{
+		set_test_name("appending a bit stream");
+		bit_stream bs1;
+		bit_stream bs2;
+		bs1.write_uint(5, 8);
+		bs2.write_uint(4, 4);
+		bs2.write_uint(7, 3);
+		std::size_t orig_size = bs1.size();
+
+		bs1.append(bs2);
+		ensure_equals("size stays the same", bs1.size(), orig_size);
+
+		//bit_stream bs3;
+		//bs3.write_uint(1001, 32);
+		//bs1.append(bs3);
+		bs1.seek(0);
+
+		ensure_equals("uint", bs1.read_uint(8), 5);
+		ensure_equals("uint", bs1.read_uint(4), 4);
+		ensure_equals("uint", bs1.read_uint(3), 7);
+		//ensure_equals("uint", bs1.read_uint(32), 1001);
+	}
+
+
+	template<> template<>
+	void tg::object::test<5>()
+	{
+		set_test_name("copy constructor and operator=");
+		bit_stream bs1;
+		bs1.write_uint(123);
+		bs1.write_uint(321);
+		bs1.seek(0);
+
+		bit_stream bs2;
+		bs2.write_uint(212);
+		bs2 = bs1;
+
+		bit_stream bs3(bs2);
+		ensure_equals("original bs", bs1.read_uint(), 123);
+		ensure_equals("original bs", bs1.read_uint(), 321);
+		ensure_equals("operator= used", bs2.read_uint(), 123);
+		ensure_equals("operator= used", bs2.read_uint(), 321);
+		ensure_equals("copy constructor used", bs3.read_uint(), 123);
+		ensure_equals("copy constructor used", bs3.read_uint(), 321);
+	}
 }
