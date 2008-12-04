@@ -7,15 +7,17 @@ bit_stream::bit_stream(std::size_t size_)
 : size_(size_)
 , cur_byte(0)
 , cur_rel_bit(0)
+, allocated_externally(false)
 {
     buffer = new buffer_type[size_];
 	memset(buffer, 0, size_);
 }
 
-bit_stream::bit_stream(const bit_stream& other)
+bit_stream::bit_stream(bit_stream const& other)
 : size_(other.size_)
 , cur_byte(other.cur_byte)
 , cur_rel_bit(other.cur_rel_bit)
+, allocated_externally(false)
 {
 	buffer = new buffer_type[size_];
 	memcpy(buffer, other.buffer, size_);
@@ -26,6 +28,7 @@ bit_stream::bit_stream(buffer_type* data, std::size_t size_)
 , size_(size_)
 , cur_byte(0)
 , cur_rel_bit(0)
+, allocated_externally(true)
 {
 }
 
@@ -34,7 +37,7 @@ bit_stream::~bit_stream()
 	clear();
 }
 
-bit_stream& bit_stream::operator=(const bit_stream& other)
+bit_stream& bit_stream::operator=(bit_stream const& other)
 {
 	clear();
 	size_ = other.size_;
@@ -42,6 +45,7 @@ bit_stream& bit_stream::operator=(const bit_stream& other)
 	cur_rel_bit = other.cur_rel_bit;
 	buffer = new buffer_type[size_];
 	memcpy(buffer, other.buffer, size_);
+	allocated_externally = false;
 	return *this;
 }
 
@@ -58,20 +62,22 @@ void bit_stream::affirm_size(std::size_t bits)
 	{
 		new_size = new_size * 2;
 	}
-	if (new_size > size_)
-	{
-		std::cout << new_size << "\n";
-		resize(new_size);
-	}
+	//std::cout << new_size << "\n";
+	resize(new_size);
 }
 
 void bit_stream::resize(std::size_t new_size)
 {
+	assert(new_size >= size_);
+	if (new_size == size_)
+		return;
 	buffer_type* new_buffer = new buffer_type[new_size];
 	// TODO: some redundancy here
 	memset(new_buffer, 0, new_size);
 	memcpy(new_buffer, buffer, size_);
-	delete[] buffer;
+	if (allocated_externally == false)
+		delete[] buffer;
+	allocated_externally = false;
 	buffer = new_buffer;
 	size_ = new_size;
 }
@@ -171,7 +177,7 @@ sint32 bit_stream::read_sint(unsigned int bits)
     return static_cast<sint32>(read_uint(bits));
 }
 
-void bit_stream::write_string(const std::string& str)
+void bit_stream::write_string(std::string const& str)
 {
     write_uint(str.size(), 32);
     for (std::string::const_iterator iter = str.begin(); iter != str.end();
@@ -192,6 +198,22 @@ std::string bit_stream::read_string()
     return ret;    
 }
 
+void bit_stream::append(bit_stream const& bs)
+{
+	// TODO: test this
+	affirm_size(bs.cur_byte * 8 + bs.cur_rel_bit);
+	if (cur_rel_bit == 0)
+	{
+		memcpy(buffer + cur_byte, bs.buffer, bs.size());
+		cur_byte += bs.cur_byte;
+		cur_rel_bit = bs.cur_rel_bit;
+	}
+	else
+	{
+		// TODO: finish this
+		assert(false);
+	}
+}
 #if 0
 void bit_stream::printContents() const
 {
@@ -204,7 +226,7 @@ void bit_stream::printContents() const
 
 void bit_stream::clear()
 {
-	if (buffer != 0)
+	if (buffer != 0 && allocated_externally == false)
 		delete[] buffer;
 }
 

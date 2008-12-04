@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include "bit_stream.hpp" 
 
 server::server()
 : expecting(false)
@@ -15,20 +16,27 @@ void server::work()
 {
 	// receive packets
 	// TODO: enforce default max packet size everywhere? 
-	//       should go into link.hpp if so
+	//       should go into link_common if so
+	//       If anything we need to check the size isn't too small
 	unsigned int const packet_size = 20;
-	char msg[packet_size];
+	char raw_msg[packet_size];
 	address addr;
-	int result = sock.recvfrom(msg, packet_size - 1, addr);
+	int result = sock.recvfrom(raw_msg, packet_size - 1, addr);
+	bit_stream msg(reinterpret_cast<uint8*>(raw_msg), packet_size);
 	if (result != -1)
 	{
 		// TODO: should disconnect the client instead
-		assert((msg[0] >> 1) == protocol_version);
+		assert((msg.read_uint(4)) == protocol_version);
+		// TODO: check if such peer exists at all
+		peer* sender = peers[msg.read_uint(8)];
+		uint8 msg_type = msg.read_uint(3);
+
 		// is packet an ack?
-		if ((msg[0] & 0x1) == 0)
+		if (msg.read_uint(1))
 		{
-			if (expecting && msg[1] == expected_num)
-				pop_top_packet();
+			uint8 seq_number = msg.read_uint(8);
+			//if (expecting && seq_number == sender->outgoing_seq_number())
+			//	pop_top_packet();
 		}
 		else
 		{
@@ -38,7 +46,7 @@ void server::work()
 
 	}
 	
-	if (packets.empty())
+	/*if (packets.empty())
 	{
 		expecting = false;
 	}
@@ -52,7 +60,7 @@ void server::work()
 		expecting = true;
 		expected_num = current_packet->msg[1];
 		pop_top_packet();
-	}
+	}*/
 
 }
 
@@ -61,11 +69,11 @@ void server::stop()
 	sock.close();
 }
 
-void server::sendto(char const* msg, std::size_t msg_len,
+void server::sendto(char* msg, std::size_t msg_len,
                     uint8 peer_id)
 {
 	// TODO: split the packet here? need to guard against overflow anyway
-	std::size_t prepared_msg_len = msg_len + 2;
+	/*std::size_t prepared_msg_len = msg_len + 2;
 	char* prepared_msg = new char[prepared_msg_len];
 	std::memcpy(prepared_msg + 2, msg, msg_len);
 	std::memset(prepared_msg, 0, 2);
@@ -77,10 +85,17 @@ void server::sendto(char const* msg, std::size_t msg_len,
 	// we're not sending an ack packet, so the 8th bit is 1
 	prepared_msg[0] |= 1;
 	// attach sequence number	
-	prepared_msg[1] |= seq_num;
+	prepared_msg[1] |= seq_num;*/
+	bit_stream bs(reinterpret_cast<bit_stream::buffer_type*>(msg), msg_len);
+	bit_stream packet(header_size);
+	packet.write_uint(protocol_version);
+	packet.write_uint(peer_id);
+	packet.write_uint(reliable_ordered);
+	packet.write_uint(false); // not an ack packet
+	packet.append(bs);
 	// store in a queue?
-	packets.push(new packet(prepared_msg, prepared_msg_len, addr));
-	seq_num += 1;
+	//packets.push(packet);
+	counters[reliable_ordered] += 1;
 }
 
 

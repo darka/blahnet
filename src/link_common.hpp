@@ -4,29 +4,45 @@
 #include "bit_stream.hpp"
 #include "udp_socket.hpp"
 #include <boost/signal.hpp>
+#include <queue>
 
-// TODO: rename to link_common
-struct link
+struct link_common
 {
 	enum disconnection_reason
 	{
 		timeout = 0,
 		voluntary = 1
 	};
+	enum message_type
+	{
+		reliable_ordered = 0
+		/*
+		unreliable_ordered = 1,
+		reliable_unordered = 2,
+		unreliable_unordered = 3,
+		*/
+	};
 
-	~link();
+	~link_common();
 	
 	//void host(unsigned short int port);
 	//void connect(address const& addr);
 
 	//void send(bit_stream const& data);
 	
+	static uint8 const header_size = 2; // in bytes
+	static uint8 const protocol_version = 0;
+	// Header:
+	// 4 bits: protocol id
+	// 8 bits: unique peer id
+	// 3 bits: message type
+	// 1 bit : is an ack packet
 protected:
-	link();
+	link_common();
 	//bool connected;
 	//address addr;
 	udp_socket sock;
-	static uint8 const protocol_version = 0;
+	//std::queue<packet*> packets;
 };
 #endif // UUID_52DA523EF9CE4CF3A46629AAEC07E467
 

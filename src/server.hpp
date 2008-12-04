@@ -1,18 +1,18 @@
 #ifndef UUID_A3C8588901A048B6B6FB438C5F31BBCF
 #define UUID_A3C8588901A048B6B6FB438C5F31BBCF
 
-#include "link.hpp"
+#include "link_common.hpp"
 #include "peer.hpp"
 #include <map>
 
-struct server : public link
+struct server : public link_common
 {
 	server();
 	void host(unsigned short int port);
 	void work();
 	void stop(); // does nothing if not hosting
 
-	void sendto(char const* msg, std::size_t msg_len,
+	void sendto(char* msg, std::size_t msg_len,
 	            uint8 peer_id);
 
 	// TODO: how to cache the addresses? ???
@@ -22,7 +22,8 @@ struct server : public link
 	
 	boost::signal<void (address const&, bit_stream const&)> on_receive;
 private:
-	std::map<uint8, peer> peers; // unique peer id => peer
+	std::map<uint8, peer*> peers; // unique peer id => peer
+	std::map<message_type, uint8> counters;
 	bool expecting;
 	
 };

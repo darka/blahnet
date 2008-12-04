@@ -6,17 +6,20 @@
 #include <string>
 #include <stdexcept>
 
+// TODO: perhaps split class into read and write bit_streams
+
 struct bit_stream
 {
 	typedef uint8 buffer_type;
 
-	// TODO: implement copy constructor and operator=
+	// TODO: TEST copy constructor and operator=, they're 
+	//       completely untested
 	bit_stream(std::size_t size=4);
-	bit_stream(const bit_stream& other);
+	bit_stream(bit_stream const& other);
 	bit_stream(buffer_type* data, std::size_t size);
 	~bit_stream();
 
-	bit_stream& operator=(const bit_stream& other);
+	bit_stream& operator=(bit_stream const& other);
 
 	void write_bool(bool n);
 	bool read_bool();
@@ -27,10 +30,12 @@ struct bit_stream
 	void write_sint(sint32 n, unsigned int bits=32);
 	sint32 read_sint(unsigned int bits);
     
-	void write_string(const std::string& str);
+	void write_string(std::string const& str);
 	std::string read_string();
 
-	const buffer_type* raw_data() const { return buffer; }
+	void append(bit_stream const& bs);
+
+	buffer_type const* raw_data() const { return buffer; }
 	buffer_type* raw_data() { return buffer; }
     std::size_t size() const { return size_; }
 
@@ -53,6 +58,7 @@ private:
 	std::size_t size_;
 	std::size_t cur_byte; // current byte
 	unsigned int cur_rel_bit; // relative to current byte
+	bool allocated_externally;
 };
 
 #endif // UUID_3A39D07169584AA1A5A6E890BF40AEC4
