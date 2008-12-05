@@ -155,16 +155,20 @@ namespace tut
 
 		bs1.append(bs2);
 		ensure_equals("size stays the same", bs1.size(), orig_size);
+		bs1.write_uint(1, 1);
 
-		//bit_stream bs3;
-		//bs3.write_uint(1001, 32);
-		//bs1.append(bs3);
+		bit_stream bs3;
+		bs3.write_uint(1001, 32);
+		bs1.append(bs3);
+		bs1.write_uint(12, 4);
 		bs1.seek(0);
 
 		ensure_equals("uint", bs1.read_uint(8), 5);
 		ensure_equals("uint", bs1.read_uint(4), 4);
 		ensure_equals("uint", bs1.read_uint(3), 7);
-		//ensure_equals("uint", bs1.read_uint(32), 1001);
+		ensure_equals("uint", bs1.read_uint(1), 1);
+		ensure_equals("uint", bs1.read_uint(32), 1001);
+		ensure_equals("uint", bs1.read_uint(4), 12);
 	}
 
 

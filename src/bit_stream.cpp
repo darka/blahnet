@@ -200,7 +200,6 @@ std::string bit_stream::read_string()
 
 void bit_stream::append(bit_stream const& bs)
 {
-	// TODO: test this
 	affirm_size(bs.cur_byte * 8 + bs.cur_rel_bit);
 	if (cur_rel_bit == 0)
 	{
@@ -210,8 +209,10 @@ void bit_stream::append(bit_stream const& bs)
 	}
 	else
 	{
-		// TODO: finish this
-		assert(false);
+		for (std::size_t i = 0; i < bs.cur_byte + (bs.cur_rel_bit > 0); ++i)
+		{
+			write_uint(bs.buffer[i], 8);
+		}
 	}
 }
 #if 0
