@@ -24,10 +24,10 @@ struct bit_stream
 
 	void write_uint(uint32 n, unsigned int bits=32);
 	uint32 read_uint(unsigned int bits=32);
-    
+
 	void write_sint(sint32 n, unsigned int bits=32);
 	sint32 read_sint(unsigned int bits=32);
-    
+
 	void write_string(std::string const& str);
 	std::string read_string();
 
@@ -35,7 +35,7 @@ struct bit_stream
 
 	buffer_type const* raw_data() const { return buffer; }
 	buffer_type* raw_data() { return buffer; }
-    std::size_t size() const { return size_; }
+	std::size_t size() const { return size_; }
 
 #if 0
 	void printContents() const;
