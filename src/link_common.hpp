@@ -24,21 +24,23 @@ struct link_common
 	};
 
 	~link_common();
-	
+
 	//void host(unsigned short int port);
 	//void connect(address const& addr);
 
 	//void send(bit_stream const& data);
-	
+
 	static uint8 const header_size = 2; // in bytes
 	static uint8 const protocol_version = 0;
 	// Header:
 	// 4 bits: protocol id
-	// 8 bits: unique peer id
+	// 8 bits: unique peer id <- we don't need this apparently
 	// 3 bits: message type
 	// 1 bit : is an ack packet
 protected:
 	link_common();
+	bit_stream add_header(bit_stream const& msg, uint8 peer_id,
+	                      message_type msg_type, bool is_ack);
 	//bool connected;
 	//address addr;
 	udp_socket sock;

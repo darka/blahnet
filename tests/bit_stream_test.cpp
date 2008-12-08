@@ -27,7 +27,7 @@ namespace tut
 	};
 
 	typedef test_group<bit_stream_data> tg;
-	tg test_grp("bit_stream test");
+	tg bit_stream_tg("bit_stream test");
 
 	template<> template<>
 	void tg::object::test<1>()
@@ -73,7 +73,7 @@ namespace tut
 		values.push_back(std::make_pair(0, bit_stream_data::bits_needed(0)));
 		values.push_back(std::make_pair(1, bit_stream_data::bits_needed(1)));
 		values.push_back(std::make_pair(3, bit_stream_data::bits_needed(3)));
-		for (std::vector<value_pair>::iterator i = values.begin(); 
+		for (std::vector<value_pair>::iterator i = values.begin();
 		     i != values.end(); ++i)
 		{
 			bs.write_uint(i->first, i->second);
@@ -102,7 +102,7 @@ namespace tut
 
 		ensure_equals("string", bs.read_string(), "abcdefgh10209420938");
 
-		for (std::vector<value_pair>::iterator i = values.begin(); 
+		for (std::vector<value_pair>::iterator i = values.begin();
 		     i != values.end(); ++i)
 		{
 			ensure_equals("uint", bs.read_uint(i->second), i->first);
@@ -129,13 +129,13 @@ namespace tut
 		}
 
 		bit_stream bs;
-		for (std::vector<value_pair>::iterator i = values.begin(); 
+		for (std::vector<value_pair>::iterator i = values.begin();
 		     i != values.end(); ++i)
 		{
 			bs.write_uint(i->first, i->second);
 		}
 		bs.seek(0);
-		for (std::vector<value_pair>::iterator i = values.begin(); 
+		for (std::vector<value_pair>::iterator i = values.begin();
 		     i != values.end(); ++i)
 		{
 			ensure_equals("uint", bs.read_uint(i->second), i->first);

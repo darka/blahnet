@@ -7,6 +7,13 @@
 #include <stdexcept>
 
 // TODO: perhaps split class into read and write bit_streams
+struct bit_stream_error : public std::logic_error
+{
+	bit_stream_error(std::string const& message)
+	: std::logic_error(message)
+	{
+	}
+};
 
 struct bit_stream
 {
@@ -37,6 +44,7 @@ struct bit_stream
 	buffer_type* raw_data() { return buffer; }
 	std::size_t size() const { return size_; }
 
+	// TODO: this should be debug only, along with seek(...)
 #if 0
 	void printContents() const;
 #endif

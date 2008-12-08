@@ -72,9 +72,12 @@ void bit_stream::resize(std::size_t new_size)
 	if (new_size == size_)
 		return;
 	buffer_type* new_buffer = new buffer_type[new_size];
-	// TODO: some redundancy here
-	memset(new_buffer, 0, new_size);
+
+	// set everything that's not to be overwritten on the new
+	// buffer to 0
+	memset(new_buffer + size_, 0, new_size - size_);
 	memcpy(new_buffer, buffer, size_);
+
 	if (allocated_externally == false)
 		delete[] buffer;
 	allocated_externally = false;
@@ -89,8 +92,11 @@ void bit_stream::write_bool(bool n)
 
 void bit_stream::write_uint(uint32 n, unsigned int bits)
 {
-	// TODO: throw if bits > 32
-	assert(bits <= 32);
+	if (bits > 32)
+		throw bit_stream_error("cannot write more than 32 bits");
+	else if (bits == 0)
+		return;
+
 	affirm_size(bits);
 	unsigned int i = 0; // How many bits we've already written
 	while (i < bits)
@@ -144,7 +150,7 @@ uint32 bit_stream::read_uint(unsigned int bits)
 			// bits to the right that we're supposed to skip
 			bits_to_write = bits - i;
 			uint8 portion = (buffer[cur_byte] << cur_rel_bit) & 0xFF;
-			
+
 			assert(bits_to_write <= 8);
 			ret |= (portion >> (8 - bits_to_write));
 		}
@@ -153,11 +159,11 @@ uint32 bit_stream::read_uint(unsigned int bits)
 			// We're here to read the current byte on the buffer from
 			// cur_rel_bit till the end
 			bits_to_write = 8 - cur_rel_bit;
-			
+
 			// Clear up the leftmost bits
 			uint8 portion = (buffer[cur_byte] << cur_rel_bit) & 0xFF;
 			portion >>= cur_rel_bit;
-			
+
 			assert(bits - i - bits_to_write <= bits);
 			ret |= (portion << (bits - i - bits_to_write));
 		}
@@ -195,7 +201,7 @@ std::string bit_stream::read_string()
 	{
 		ret.append(1, read_uint(8));
 	}
-	return ret; 
+	return ret;
 }
 
 void bit_stream::append(bit_stream const& bs)
@@ -241,7 +247,7 @@ void bit_stream::write_bit(bool bit)
 bool bit_stream::read_bit()
 {
 	bool ret = (buffer[cur_byte] >> (8 - cur_rel_bit - 1)) & 0x01;
-	inc_bit();	
+	inc_bit();
 	return ret;
 }
 

@@ -3,13 +3,12 @@
 
 struct sockaddr_in;
 
-/* TODO: implement copy constructor and operator= */
 struct address
 {
 	address(); /* uses host's ip address and picks a port automatically */
-	address(unsigned short int port); /* uses host's ip address and 
+	address(unsigned short int port); /* uses host's ip address and
 	                                     uses given port */
-	address(unsigned short int port, char const* ip); /* uses given ip 
+	address(unsigned short int port, char const* ip); /* uses given ip
 	                                                     and port */
 	address(address const& other);
 	~address();
@@ -18,10 +17,11 @@ struct address
 
 	/*unsigned short int port() const;
 	const char* ip() const;*/
-	sockaddr_in const* data() const { return data_; } 
-	sockaddr_in* data() { return data_; } 
-	
+	sockaddr_in const* data() const { return data_; }
+	sockaddr_in* data() { return data_; }
+
 private:
+	void clear();
 	sockaddr_in* data_;
 };
 
