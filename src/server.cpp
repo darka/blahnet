@@ -1,5 +1,5 @@
 #include "server.hpp"
-#include "bit_stream.hpp" 
+#include "bit_stream.hpp"
 
 server::server()
 : expecting(false)
@@ -15,7 +15,7 @@ void server::host(unsigned short int port)
 void server::work()
 {
 	// receive packets
-	// TODO: enforce default max packet size everywhere? 
+	// TODO: enforce default max packet size everywhere?
 	//       should go into link_common if so
 	//       If anything we need to check the size isn't too small
 	unsigned int const packet_size = 20;
@@ -45,7 +45,7 @@ void server::work()
 		}
 
 	}
-	
+
 	/*if (packets.empty())
 	{
 		expecting = false;
@@ -69,33 +69,19 @@ void server::stop()
 	sock.close();
 }
 
-void server::sendto(char* msg, std::size_t msg_len,
-                    uint8 peer_id)
+void server::send(bit_stream const& msg, message_type msg_type,
+                  address const& addr)
 {
 	// TODO: split the packet here? need to guard against overflow anyway
-	/*std::size_t prepared_msg_len = msg_len + 2;
-	char* prepared_msg = new char[prepared_msg_len];
-	std::memcpy(prepared_msg + 2, msg, msg_len);
-	std::memset(prepared_msg, 0, 2);
-
-	// attach header
-	// first 7 bits = protocol version 
-	// TODO: (how else do we do this? on connection? look at q3
-	prepared_msg[0] |= (protocol_version << 1);
-	// we're not sending an ack packet, so the 8th bit is 1
-	prepared_msg[0] |= 1;
-	// attach sequence number	
-	prepared_msg[1] |= seq_num;*/
-	bit_stream bs(reinterpret_cast<bit_stream::buffer_type*>(msg), msg_len);
-	bit_stream packet(header_size);
-	packet.write_uint(protocol_version);
-	packet.write_uint(peer_id);
-	packet.write_uint(reliable_ordered);
-	packet.write_uint(false); // not an ack packet
-	packet.append(bs);
 	// store in a queue?
 	//packets.push(packet);
-	counters[reliable_ordered] += 1;
+	switch (msg_type)
+	{
+	default:
+		counters[msg_type] += 1;
+		break;
+	}
+
 }
 
 

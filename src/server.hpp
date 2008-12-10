@@ -12,8 +12,8 @@ struct server : public link_common
 	void work();
 	void stop(); // does nothing if not hosting
 
-	void sendto(char* msg, std::size_t msg_len,
-	            uint8 peer_id);
+	void send(bit_stream const& msg, message_type msg_type,
+	          address const& addr);
 
 	// TODO: how to cache the addresses? ???
 	boost::signal<void (address const&)> on_connect;

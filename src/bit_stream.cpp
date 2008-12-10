@@ -39,6 +39,7 @@ bit_stream::~bit_stream()
 
 bit_stream& bit_stream::operator=(bit_stream const& other)
 {
+	if (this == &other) return *this;
 	clear();
 	size_ = other.size_;
 	cur_byte = other.cur_byte;

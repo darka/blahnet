@@ -58,6 +58,7 @@ address::~address()
 
 address& address::operator=(address const& other)
 {
+	if (this == &other) return *this;
 	clear();
 	data_ = new sockaddr_in();
 	copy_data(*other.data_, *this->data_);
